@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Margaret Fetcher</title>
+
+        <link href="//fonts.googleapis.com/css?family=Domine:700" rel="stylesheet">
+
+        <style>
+        html, 
+        body {
+            width: 100%; 
+            height: 100%; 
+        }
+
+        body {
+            background: #f1f1f1;
+            margin: 0;
+            display: flex; 
+            justify-content: center;
+            align-items: center; 
+            width: 100%; 
+            height: 100%; 
+            font: 22px/1 -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+        }
+
+        #count {
+            text-align: center;
+            font: 700 300pt/1 "Domine", "Georgia", serif;
+            color: rgba(0,0,0,.8);
+        }
+
+        #count:after {
+            display: block;
+            content: ""; /* insert a custom text here, which appears below */
+            font: 100 80pt -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+            text-align: center;
+            text-transform: uppercase;
+            opacity: .6;
+            text-shadow: 0;
+        }
+
+        @media (max-width: 1024px) {
+            #count { font-size: 200pt }
+            #count:after { font-size: 60pt }
+        }
+
+        @media (max-width: 640px) {
+            #count { font-size: 64px }
+            #count:after { font-size: 48px }
+        }
+        </style>
+    </head>
+    <body>
+
+        <!-- the counter -->
+        <div id="count" class="count"></div>
+
+        <!-- json call -->
+        <script src="//code.jquery.com/jquery-1.7.1.min.js"></script>
+        <script>
+        $(document).ready(function() {
+            (function(){
+                // doing xmlhttpreqs here
+                var getJSON = function(url) {
+                    return new Promise(function(resolve, reject) {
+                        var xhr = new XMLHttpRequest();
+                        // dingdong
+                        xhr.open('get', url, true);
+                        xhr.responseType = 'json';
+                        xhr.onload = function() {
+                            var status = xhr.status;
+                            // if everything is okay
+                            if (status == 200) {
+                                resolve(xhr.response);
+                            // otherwise stahp
+                            } else {
+                                reject(status);
+                            }
+                        };
+                        xhr.send();
+                    });
+                };
+                function renderMargaret() {
+                    getJSON('./fetcher.php').then(function(data) {
+                        // retrieve data
+                        for (var key in data) {
+                            console.log(data[0]);
+                            // render the value of `counter`
+                            $('#count').text(data[0].counter);
+                            // refresh title with value of `counter`
+                            document.title = "(" + data[0].counter + ") " + document.title; 
+                        }
+                    }, function(status) { 
+                           // oh noez!
+                           alert('Gnaah, something went wrong.');
+                       }
+                    );
+                };
+                
+                // call it... 
+                renderMargaret();
+                // ...every x milliseconds
+                setTimeout(arguments.callee, 5000);
+            })();
+        });
+        </script>
+
+    </body>
+</html>
